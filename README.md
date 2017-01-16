@@ -19,6 +19,7 @@ This will run GeoNode on the default docker machine @ 192.168.99.100. If not adj
 * docker-compose stop
 * docker-compose up -d
 * access GeoNode at http://machineip
+* try signing in from http://machineip/geoserver
 * done!
 
 ## Images used
