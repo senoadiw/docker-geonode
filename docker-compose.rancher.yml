@@ -1,0 +1,82 @@
+postgres:
+  image: postgres
+
+elasticsearch:
+ image: elasticsearch
+
+rabbitmq:
+   image: rabbitmq
+
+django:
+  image: senoadiw/geonode_oauth
+  links:
+    - postgres
+    - elasticsearch
+    - rabbitmq
+  environment:
+    - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
+    - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+    - DJANGO_SETTINGS_MODULE=geonode.settings
+    - SITEURL=http://192.168.1.113/
+    - GEOSERVER_LOCATION=http://geoserver:8080/geoserver/
+    - GEOSERVER_PUBLIC_LOCATION=http://192.168.1.113/geoserver/
+    - GEOSERVER_BASE_URL=http://192.168.1.113/geoserver/ # http://geoserver:8080/geoserver/
+    - ALLOWED_HOSTS=['*',]
+    - DEBUG=True
+
+celery:
+  image: senoadiw/geonode_oauth
+  links:
+    - rabbitmq
+    - postgres
+    - elasticsearch
+  command: celery worker --app=geonode.celery_app:app -B -l INFO
+  environment:
+    - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
+    - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
+    - GEOSERVER_LOCATION=http://geoserver:8080/geoserver/
+    - GEOSERVER_PUBLIC_LOCATION=http://192.168.1.113/geoserver/
+    - GEOSERVER_BASE_URL=http://192.168.1.113/geoserver/ # http://geoserver:8080/geoserver/
+    - DJANGO_SETTINGS_MODULE=geonode.settings
+    - ALLOWED_HOSTS=['django',]
+    - C_FORCE_ROOT=1
+    - DEBUG=True
+
+geoserver:
+  image: senoadiw/geoserver_oauth
+  labels:
+    io.rancher.sidekicks: datadirconf
+  links:
+    - postgres
+  ports:
+    - "8080"
+  volumes_from:
+    - datadirconf
+  environment:
+    - DOCKER_HOST
+    - PUBLIC_PORT=80
+    - DOCKER_HOST_IP
+    - DJANGO_URL=http://192.168.1.113/
+    - DJANGO_PUBLIC_LOCATION=192.168.1.113 # request to oauth provider
+    - GEOSERVER_PUBLIC_LOCATION=192.168.1.113 # redirect back to geoserver
+    - GEONODE_BASE_URL=192.168.1.113 # geonode REST role service base url
+
+nginx:
+  image: terranodo/nginx:geoserver
+  links:
+    - django
+    - geoserver
+  ports:
+    - "80:80"
+
+datadirconf:
+  image: senoadiw/geoserver_oauth_data
+  container_name: geoserver_data_dir
+  command: cat
+  stdin_open: true
+  volumes:
+    - /geoserver_data/data
+
+#volumes:
+#
+#  geoserver_data_dir:
