@@ -34,6 +34,7 @@ This will run GeoNode on the default docker machine @ 192.168.99.100. If not adj
     * download rancher-compose (download link at bottom right of rancher server)
     * extract rancher-compose executable to docker-geonode dir
     * cd to docker-geonode
+    * edit the ip addresses in docker-compose.rancher.yml to match the HOSTIP
     * run this: ./rancher-compose --url=http://RANCHERSERVER:8080/ --access-key=ENVKEYUSER --secret-key=ENVKEYPASS --verbose -p geonode-rancher -f docker-compose.rancher.yml create
     * the stack is successfully created if you get this output: level=debug msg="Project [geonode-rancher]: Project created "
 * access rancher server in browser
