@@ -1,10 +1,14 @@
 # docker-geonode
 
-GeoNode 2.5.7 with GeoServer oauth2 configured
+GeoNode 2.5.9 with GeoServer oauth2 configured
 
 ## How to run
 
-This will run GeoNode on the default docker machine @ 192.168.99.100. If not adjust the IP addresses in the docker-compose.yml and fixtures/default_oauth_apps.json.
+This will run GeoNode on the default docker machine.
+
+Make sure the default machine is accessible at http://geonode. Edit the /etc/hosts file if necessary.
+
+If using Docker with the VirtualBox driver on Windows, make sure to assign at least 4096MB of RAM to the default machine VM.
 
 * git clone https://github.com/senoadiw/docker-geonode.git
 * cd docker-geonode
@@ -12,14 +16,14 @@ This will run GeoNode on the default docker machine @ 192.168.99.100. If not adj
 * docker-compose ps
 * docker exec -it dockergeonode_django_1 bash
     * django-admin migrate account --noinput && django-admin migrate --noinput && django-admin collectstatic --noinput
-    * django-admin createsuperuser
-        * admin adminpassword
+    * django-admin loaddata sample_admin
+    * django-admin loaddata initial_data
     * django-admin loaddata fixtures/default_oauth_apps.json
-* wait a few minutes while GeoServer initializes
 * docker-compose stop
 * docker-compose up -d
-* access GeoNode at http://MACHINEIP
-* try signing in from http://MACHINEIP/geoserver
+* wait a few minutes while GeoServer initializes
+* access GeoNode at http://geonode
+* try signing in from http://geonode/geoserver (admin admin)
 * done!
 
 ## Rancher
