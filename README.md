@@ -22,10 +22,12 @@ If using Docker with the VirtualBox driver on Windows, make sure to assign at le
     * exit
 * wait a few minutes while GeoServer initializes
 * access GeoNode at http://geonode
-* try signing in from http://geonode/geoserver (admin admin)
+* try signing in from the oauth login button at http://geonode/geoserver (admin admin)
 * done!
 
 ## Rancher
+
+Make sure the host machine is accessible at http://geonode. Edit the /etc/hosts file if necessary.
 
 * access rancher server in browser
     * select default environment on rancher server
@@ -37,7 +39,6 @@ If using Docker with the VirtualBox driver on Windows, make sure to assign at le
     * download rancher-compose (download link at bottom right of rancher server)
     * extract rancher-compose executable to docker-geonode dir
     * cd to docker-geonode
-    * edit the ip addresses in docker-compose.rancher.yml to match the HOSTIP
     * run this: ./rancher-compose --url=http://RANCHERSERVER:8080/ --access-key=ENVKEYUSER --secret-key=ENVKEYPASS --verbose -p geonode-rancher -f docker-compose.rancher.yml create
     * the stack is successfully created if you get this output: level=debug msg="Project [geonode-rancher]: Project created "
 * access rancher server in browser
@@ -47,21 +48,22 @@ If using Docker with the VirtualBox driver on Windows, make sure to assign at le
     * click the django service
         * click the menu dropdown button on the container > Execute Shell
         * on django container shell run these to initialize the geonode tables:
-            * django-admin migrate account --noinput && django-admin migrate --noinput && django-admin collectstatic --noinput
-            * django-admin createsuperuser
-* create default oauth2 entry for GeoServer
-    * access http://HOSTIP/admin/oauth2_provider/application/add
+            * django-admin migrate --noinput && django-admin collectstatic --noinput
+            * django-admin loaddata sample_admin
+            * django-admin loaddata initial_data
+* create default oauth2 app entry for GeoServer
+    * access http://geonode/admin/oauth2_provider/application/add (login with admin admin)
     * enter these values:
         * client id: Jrchz2oPY3akmzndmgUTYrs9gczlgoV20YPSvqaV
         * user: admin
-        * redirect uris: http://HOSTIP/geoserver
+        * redirect uris: http://geonode/geoserver/
         * client type: confidential
         * authorization grant type: authorization-code
         * client secret: rCnp5txobUo83EpQEblM8fVj3QT5zb5qRfxNsuPzCqZaiRyIoxM4jdgMiZKFfePBHYXCLd7B8NlkfDBY9HKeIQPcy5Cp08KQNpRHQbjpLItDHv12GvkSeXp6OxaUETv3
         * name: GeoServer
         * skip authorization: check
         * click save
-* try signing in from http://HOSTIP/geoserver
+* try signing in from the oauth login button at http://geonode/geoserver (admin admin)
 * done!
 
 ## Images used

@@ -8,42 +8,43 @@ rabbitmq:
    image: rabbitmq
 
 django:
-  image: senoadiw/geonode_oauth
+  image: senoadiw/geonode_oauth:2.5.10
   links:
     - postgres
     - elasticsearch
     - rabbitmq
-  environment:
+  command: django-admin.py runserver 0.0.0.0:8000 --settings=geonode.settings
+  environment: # taken from /scripts/docker/env/production/django.env
     - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
     - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
     - DJANGO_SETTINGS_MODULE=geonode.settings
-    - SITEURL=http://192.168.1.113/
-    - GEOSERVER_LOCATION=http://geoserver:8080/geoserver/
-    - GEOSERVER_PUBLIC_LOCATION=http://192.168.1.113/geoserver/
-    - GEOSERVER_BASE_URL=http://192.168.1.113/geoserver/ # http://geoserver:8080/geoserver/
     - ALLOWED_HOSTS=['*',]
+    - C_FORCE_ROOT=1
+    - GEOSERVER_PUBLIC_LOCATION=http://geonode/geoserver/
+    - GEOSERVER_LOCATION=http://geonode/geoserver/
+    - SITEURL=http://geonode/
     - DEBUG=True
 
 celery:
-  image: senoadiw/geonode_oauth
+  image: senoadiw/geonode_oauth:2.5.10
   links:
     - rabbitmq
     - postgres
     - elasticsearch
   command: celery worker --app=geonode.celery_app:app -B -l INFO
-  environment:
+  environment: # taken from /scripts/docker/env/production/django.env
     - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
     - BROKER_URL=amqp://guest:guest@rabbitmq:5672/
-    - GEOSERVER_LOCATION=http://geoserver:8080/geoserver/
-    - GEOSERVER_PUBLIC_LOCATION=http://192.168.1.113/geoserver/
-    - GEOSERVER_BASE_URL=http://192.168.1.113/geoserver/ # http://geoserver:8080/geoserver/
     - DJANGO_SETTINGS_MODULE=geonode.settings
-    - ALLOWED_HOSTS=['django',]
+    - ALLOWED_HOSTS=['*',]
     - C_FORCE_ROOT=1
+    - GEOSERVER_PUBLIC_LOCATION=http://geonode/geoserver/
+    - GEOSERVER_LOCATION=http://geonode/geoserver/
+    - SITEURL=http://geonode/
     - DEBUG=True
 
 geoserver:
-  image: senoadiw/geoserver_oauth
+  image: geonode/geoserver:alias
   labels:
     io.rancher.sidekicks: datadirconf
   links:
@@ -52,17 +53,17 @@ geoserver:
     - "8080"
   volumes_from:
     - datadirconf
-  environment:
+  environment: # taken from /scripts/docker/env/production/geoserver.env
     - DOCKER_HOST
     - PUBLIC_PORT=80
     - DOCKER_HOST_IP
-    - DJANGO_URL=http://192.168.1.113/
-    - DJANGO_PUBLIC_LOCATION=192.168.1.113 # request to oauth provider
-    - GEOSERVER_PUBLIC_LOCATION=192.168.1.113 # redirect back to geoserver
-    - GEONODE_BASE_URL=192.168.1.113 # geonode REST role service base url
+    - DJANGO_URL=http://django:8000/
+    - GEOSERVER_PUBLIC_LOCATION=http://geonode/geoserver/
+    - GEOSERVER_LOCATION=http://geoserver:8080/geoserver/
+    - SITEURL=http://geonode/
 
-nginx:
-  image: terranodo/nginx:geoserver
+geonode:
+  image: geonode/nginx:geoserver
   links:
     - django
     - geoserver
@@ -70,7 +71,7 @@ nginx:
     - "80:80"
 
 datadirconf:
-  image: senoadiw/geoserver_oauth_data
+  image: geonode/geoserver_data:2.9.x-oauth2
   container_name: geoserver_data_dir
   command: cat
   stdin_open: true
