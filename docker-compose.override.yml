@@ -1,10 +1,7 @@
-# adapted from https://github.com/piensa/geonode/blob/pubsub/docker-compose.override.yml
-
 version: '2'
 
 services:
   django:
-    build: .
     # Loading the app is defined here to allow for
     # autoreload on changes it is mounted on top of the
     # old copy that docker added when creating the image
@@ -14,7 +11,6 @@ services:
       - DEBUG=True
 
   celery:
-    build: .
     # Loading the app is defined here to allow for
     # autoreload on changes it is mounted on top of the
     # old copy that docker added when creating the image
@@ -22,13 +18,3 @@ services:
       - '.:/usr/src/app'
     environment:
       - DEBUG=True
-
-  #consumers:
-  #  build: .
-  #  # Loading the app is defined here to allow for
-  #  # autoreload on changes it is mounted on top of the
-  #  # old copy that docker added when creating the image
-  #  volumes:
-  #    - '.:/usr/src/app'
-  #  environment:
-  #    - DEBUG=True

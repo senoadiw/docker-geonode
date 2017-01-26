@@ -1,5 +1,3 @@
-# adapted from https://github.com/piensa/geonode/blob/pubsub/docker-compose.yml
-
 version: '2'
 services:
 
@@ -13,7 +11,7 @@ services:
      image: rabbitmq
 
   django:
-    image: senoadiw/geonode_oauth:2.5.9
+    image: senoadiw/geonode_oauth:2.5.10
     links:
       - postgres
       - elasticsearch
@@ -23,7 +21,7 @@ services:
       - ./scripts/docker/env/production/django.env
 
   celery:
-    image: senoadiw/geonode_oauth:2.5.9
+    image: senoadiw/geonode_oauth:2.5.10
     links:
       - rabbitmq
       - postgres
@@ -32,18 +30,8 @@ services:
     env_file:
       - ./scripts/docker/env/production/django.env
 
-  #consumers:
-  #  image: senoadiw/geonode_oauth:2.5.9
-  #  links:
-  #    - rabbitmq
-  #    - postgres
-  #    - elasticsearch
-  #  command: django-admin.py runmessaging
-  #  env_file:
-  #    - ./scripts/docker/env/production/django.env
-
   geoserver:
-    image: waybarrios/geoserver:piensa
+    image: geonode/geoserver:alias
     links:
       - postgres
     ports:
