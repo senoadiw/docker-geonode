@@ -63,7 +63,7 @@ geoserver:
     - SITEURL=http://geonode/
 
 geonode:
-  image: geonode/nginx:geoserver
+  image: senoadiw/nginx:rancher
   links:
     - django
     - geoserver

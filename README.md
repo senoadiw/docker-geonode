@@ -4,8 +4,6 @@ GeoNode 2.5.10 with GeoServer oauth2 configured
 
 ## How to run
 
-This will run GeoNode on the default docker machine.
-
 Make sure the default machine is accessible at http://geonode. Edit the /etc/hosts file if necessary.
 
 If using Docker with the VirtualBox driver on Windows, make sure to assign at least 4096MB of RAM to the default machine VM.
@@ -44,13 +42,14 @@ Make sure the host machine is accessible at http://geonode. Edit the /etc/hosts 
 * access rancher server in browser
     * geonode-rancher stack should be available in user stacks
     * click the geonode-rancher stack to see the service list
-    * click the play button and wait while images are download and all containers become active
+    * click the top right play button and wait while images are download and all containers become active
     * click the django service
         * click the menu dropdown button on the container > Execute Shell
         * on django container shell run these to initialize the geonode tables:
             * django-admin migrate --noinput && django-admin collectstatic --noinput
             * django-admin loaddata sample_admin
             * django-admin loaddata initial_data
+        * click the close button
 * create default oauth2 app entry for GeoServer
     * access http://geonode/admin/oauth2_provider/application/add (login with admin admin)
     * enter these values:
@@ -63,6 +62,7 @@ Make sure the host machine is accessible at http://geonode. Edit the /etc/hosts 
         * name: GeoServer
         * skip authorization: check
         * click save
+        * logout from admin
 * try signing in from the oauth login button at http://geonode/geoserver (admin admin)
 * done!
 
